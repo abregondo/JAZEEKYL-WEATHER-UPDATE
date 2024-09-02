@@ -127,15 +127,17 @@
           dates[i].textContent = `${month} ${dayOfMonth}`;
         }
 
-        // -------------------------------------------------------------------A-P-I--K-E-Y-----------------------------------------------------------------//
+        // ----------------------------------------------A-P-I--K-E-Y------------------------------------------------//
 
-        const apiKey = "196628af92d54548a5e55932241908";
+        const apiKey = "7005baefdc684bde95d71847240209";
         const cityName = "Iligan";
         const apiEndpoint = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=7`;
 
         try {
           const response = await fetch(apiEndpoint);
           const weatherData = await response.json();
+
+          console.log("API Response:", weatherData); // Add this line to debug
 
           console.log(weatherData);
 
@@ -144,18 +146,37 @@
           const temperatureElements = document.querySelectorAll(
             'p[id^="temperature-"]'
           );
+          const imageElements = document.querySelectorAll("h2 img");
 
-          for (let i = 0; i < 7; i++) {
+          for (let i = 0; i < 3; i++) {
             const forecastDay = weatherData.forecast.forecastday[i];
-            const humidity =
-              weatherData.forecast.forecastday[i].hour["12"].humidity;
+            const humidity = forecastDay.hour[0].humidity; // Get the humidity from the first hour of the day
             const temperature = forecastDay.day.avgtemp_c;
+            const condition = forecastDay.day.condition.text; // Get the weather condition text
 
             console.log(humidity);
             humidityElements[i].textContent = `Humidity: ${humidity}%`;
             temperatureElements[
               i
             ].textContent = `Temperature: ${temperature}°C`;
+
+            // Set the image based on the weather condition
+            let imageSrc;
+            if (condition.includes("Sunny")) {
+              imageSrc = "sunny.webp";
+            } else if (condition.includes("Thunder")) {
+              imageSrc = "thunder.webp";
+            } else {
+              imageSrc = "cloudy.webp";
+            }
+            imageElements[i].src = imageSrc;
+          }
+
+          // For days 4-7, display a message indicating that no data is available
+          for (let i = 3; i < 7; i++) {
+            humidityElements[i].textContent = "No data available";
+            temperatureElements[i].textContent = "No data available";
+            imageElements[i].src = "cloudy.webp"; // Default to cloudy image
           }
         } catch (error) {
           console.error(`Error fetching weather data: ${error.message}`);
