@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Update - Iligan City</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+
+  <body>
+    <h1><span>WEATHER UPDATE</span> - PHILIPPINES</h1>
+    <h2>ILIGAN CITY</h2>
+
+    <p id="current-time"></p>
+
+    <div class="container">
+      <div class="day">
+        <p id="day-1"></p>
+        <div class="column">
+          <h2><img src="sunny.webp" /></h2>
+          <p id="humidity-1"></p>
+          <p id="temperature-1"></p>
+          <h3 id="date-1"></h3>
+        </div>
+      </div>
+
+      <div class="day">
+        <p id="day-2"></p>
+        <div class="column">
+          <h2><img src="thunder.webp" /></h2>
+          <p id="humidity-2"></p>
+          <p id="temperature-2"></p>
+          <h3 id="date-2"></h3>
+        </div>
+      </div>
+
+      <div class="day">
+        <p id="day-3"></p>
+        <div class="column">
+          <h2><img src="thunder.webp" /></h2>
+          <p id="humidity-3"></p>
+          <p id="temperature-3"></p>
+          <h3 id="date-3"></h3>
+        </div>
+      </div>
+
+      <div class="day">
+        <p id="day-4"></p>
+        <div class="column">
+          <h2><img src="cloudy.webp" /></h2>
+          <p id="humidity-4"></p>
+          <p id="temperature-4"></p>
+          <h3 id="date-4"></h3>
+        </div>
+      </div>
+
+      <div class="day">
+        <p id="day-5"></p>
+        <div class="column">
+          <h2><img src="sunny.webp" /></h2>
+          <p id="humidity-5"></p>
+          <p id="temperature-5"></p>
+          <h3 id="date-5"></h3>
+        </div>
+      </div>
+
+      <div class="day">
+        <p id="day-6"></p>
+        <div class="column">
+          <h2><img src="sunny.webp" /></h2>
+          <p id="humidity-6"></p>
+          <p id="temperature-6"></p>
+          <h3 id="date-6"></h3>
+        </div>
+      </div>
+
+      <div class="day">
+        <p id="day-7"></p>
+        <div class="column">
+          <h2><img src="cloudy.webp" /></h2>
+          <p id="humidity-7"></p>
+          <p id="temperature-7"></p>
+          <h3 id="date-7"></h3>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p class="footer">
+        Jazee Kyl Abregondo &copy; 2024. All rights reserved.
+      </p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const currentTimeElement = document.getElementById("current-time");
+        setInterval(() => {
+          const currentTime = new Date();
+          const hours = currentTime.getHours();
+          const minutes = currentTime.getMinutes();
+          const seconds = currentTime.getSeconds();
+          const timeString = `${hours.toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+          currentTimeElement.textContent = timeString;
+        }, 1000);
+
+        const days = document.querySelectorAll('p[id^="day-"]');
+        const dates = document.querySelectorAll("h3");
+        const today = new Date();
+        const dayNames = [
+          "SUNDAY",
+          "MONDAY",
+          "TUESDAY",
+          "WEDNESDAY",
+          "THURSDAY",
+          "FRIDAY",
+          "SATURDAY",
+        ];
+
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(today.getTime() + i * 24 * 60 * 60 * 1000);
+          const day = dayNames[date.getDay()];
+          const month = date.toLocaleString("default", { month: "long" });
+          const dayOfMonth = date.getDate();
+
+          days[i].textContent = day;
+          dates[i].textContent = `${month} ${dayOfMonth}`;
+        }
+
+        // -------------------------------------------------------------------A-P-I--K-E-Y-----------------------------------------------------------------//
+
+        const apiKey = "196628af92d54548a5e55932241908";
+        const cityName = "Iligan";
+        const apiEndpoint = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=7`;
+
+        try {
+          const response = await fetch(apiEndpoint);
+          const weatherData = await response.json();
+
+          console.log(weatherData);
+
+          const humidityElements =
+            document.querySelectorAll('p[id^="humidity-"]');
+          const temperatureElements = document.querySelectorAll(
+            'p[id^="temperature-"]'
+          );
+
+          for (let i = 0; i < 7; i++) {
+            const forecastDay = weatherData.forecast.forecastday[i];
+            const humidity =
+              weatherData.forecast.forecastday[i].hour["12"].humidity;
+            const temperature = forecastDay.day.avgtemp_c;
+
+            console.log(humidity);
+            humidityElements[i].textContent = `Humidity: ${humidity}%`;
+            temperatureElements[
+              i
+            ].textContent = `Temperature: ${temperature}°C`;
+          }
+        } catch (error) {
+          console.error(`Error fetching weather data: ${error.message}`);
+        }
+      });
+    </script>
+  </body>
+</html>
